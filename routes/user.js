@@ -14,7 +14,6 @@ const verifyLogin = (req, res, next) => {     //middleware - validity check
 /* GET home page. */
 router.get('/', function (req, res, next) {
   let user = req.session.user
-  console.log(user);
   productHelper.getAllProducts().then((products) => {
     res.render('user/view-products', { products, user });
 
@@ -34,7 +33,9 @@ router.get('/signup', function (req, res) {
 });
 router.post('/signup', (req, res) => {
   userHelper.doSignup(req.body).then((response) => {
-    console.log(response);
+    req.session.loggedIn = true       //saving the login details to session
+    req.session.user = response
+    res.redirect('/')
   })
 })
 router.post('/login', (req, res) => {
@@ -53,8 +54,14 @@ router.get('/logout', (req, res) => {
   req.session.destroy()
   res.redirect('/')
 })
-router.get('/cart',verifyLogin,  (req, res) => {    //verifyLogin is a middleware
-  res.render('user/cart')
+router.get('/cart', verifyLogin, async (req, res) => {    //verifyLogin is a middleware
+  let products =await userHelper.getCartProducts(req.session.user._id)
+  //console.log(products);
+  res.render('user/cart',{products})
 })
-
+router.get('/add-to-cart/:id', verifyLogin, (req, res) => {
+  userHelper.addToCart(req.params.id, req.session.user._id).then(() => {
+    res.redirect('/')
+  })
+})
 module.exports = router;

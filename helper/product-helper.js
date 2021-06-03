@@ -20,9 +20,31 @@ module.exports = {
     },
     deleteProduct: (productID) => {
         return new Promise((resolve, reject) => {
-            db.get().collection(collection.PRODUCT_COLLECTION).removeOne({ _id:objectID(productID)}).then((response) => {
+            db.get().collection(collection.PRODUCT_COLLECTION).removeOne({ _id: objectID(productID) }).then((response) => {
                 resolve(response)
             })
+        })
+    },
+    getAllProductDetails: (productID) => {
+        return new Promise((resolve, reject) => {
+            db.get().collection(collection.PRODUCT_COLLECTION).findOne({ _id: objectID(productID) }).then((product) => {
+                resolve(product)
+            })
+        })
+    },
+    updateProduct: (productID, productData) => {
+        return new Promise((resolve, reject) => {
+            db.get().collection(collection.PRODUCT_COLLECTION)
+                .updateOne({ _id: objectID(productID) }, {
+                    $set: {
+                        Name: productData.Name,
+                        Category: productData.Category,
+                        Discription: productData.Discription,
+                        Price: productData.Price
+                    }
+                }).then((response) => {
+                    resolve()
+                })
         })
     }
 }
