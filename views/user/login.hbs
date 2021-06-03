@@ -3,6 +3,9 @@
         <div class="login-form col-md-4 offset-md-4">
             <form action="/login" method="post">
                 <h2 class="text-center">Log in</h2>
+                {{#if loginErr}}
+                    <p class="text-center">{{loginErr}}</p>
+                {{/if}}
                 <div class="form-group">
                     <input type="text" class="form-control" name="Username" placeholder="Username" required="required">
                 </div>
