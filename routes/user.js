@@ -12,10 +12,13 @@ const verifyLogin = (req, res, next) => {     //middleware - validity check
 }
 
 /* GET home page. */
-router.get('/', function (req, res, next) {
+router.get('/',async function (req, res, next) {
   let user = req.session.user
+  let cartCount = null
+  if(user)
+    cartCount =await userHelper.getCartCount(req.session.user._id)
   productHelper.getAllProducts().then((products) => {
-    res.render('user/view-products', { products, user });
+    res.render('user/view-products', { products, user, cartCount});
 
   })
 });
@@ -55,13 +58,22 @@ router.get('/logout', (req, res) => {
   res.redirect('/')
 })
 router.get('/cart', verifyLogin, async (req, res) => {    //verifyLogin is a middleware
+  let user = req.session.user
+  let cartCount = null
+  if(user)
+    cartCount =await userHelper.getCartCount(req.session.user._id)
+
   let products =await userHelper.getCartProducts(req.session.user._id)
-  //console.log(products);
-  res.render('user/cart',{products})
+  res.render('user/cart',{products,user:req.session.user, cartCount})
 })
-router.get('/add-to-cart/:id', verifyLogin, (req, res) => {
+router.get('/add-to-cart/:id', (req, res) => {    //we are using ajax in the coming function so no need to use middleware = verifyLogin
   userHelper.addToCart(req.params.id, req.session.user._id).then(() => {
-    res.redirect('/')
+    res.json({status:true})
+  })
+})
+router.post('/change-product-quantity', (req, res,next) => {
+  userHelper.changeProductQuantity(req.body).then(()=>{
+    res.json({status:true})
   })
 })
 module.exports = router;
