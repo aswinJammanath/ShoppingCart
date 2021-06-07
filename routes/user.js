@@ -72,8 +72,13 @@ router.get('/add-to-cart/:id', (req, res) => {    //we are using ajax in the com
   })
 })
 router.post('/change-product-quantity', (req, res,next) => {
-  userHelper.changeProductQuantity(req.body).then(()=>{
-    res.json({status:true})
+  userHelper.changeProductQuantity(req.body).then((response)=>{
+    res.json(response)
+  })
+})
+router.post('/remove-product',(req, res)=>{
+  userHelper.removeProductFromCart(req.body).then((response)=>{
+    res.json(response)
   })
 })
 module.exports = router;
